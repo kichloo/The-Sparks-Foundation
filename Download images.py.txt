@@ -1,0 +1,39 @@
+from selenium import webdriver
+import os
+import ast
+import urllib
+import urllib.request as ulib
+from bs4 import BeautifulSoup as Soup
+driver = webdriver.Chrome("C:\\Users\\visha\\Downloads\\chromedriver.exe")
+driver.maximize_window()
+url='............'
+directory = '.............'
+def find_urls(url):
+    driver.get(url)
+    page=driver.page_source
+    soup=Soup(page,'lxml')
+    urls=soup.find_all('div',{'class':'rg_meta notranslate'})
+    all_urls=[]
+    for i in urls:
+        link=i.text
+        link=ast.literal_eval(link)['ou']
+        all_urls.append(link)
+    return all_urls
+    
+URLs=find_urls(url)
+
+def save_img(url,directory):
+    if not os.path.isdir(directory):
+        os.mkdir(directory)      
+    for i,link in enumerate(url):
+        if(i>9):
+            break
+        path=os.path.join(directory,'{}.jpg'.format(i))
+        try:
+            f = open(path,'wb')
+            f.write(ulib.urlopen(link).read())
+            f.close()
+        except:
+           print('Failed')
+        
+save_img(URLs,directory)
